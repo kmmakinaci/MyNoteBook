@@ -1,0 +1,254 @@
+# A Short Review for CPSA-F  Examination
+
+## Introduction
+
+### Fundamental organization
+
+The way things are ordered and each element is given its designated place. Fundamental because it must stand out clearly, be obvious to everyone who works on this system and act as the most profound guideline to be followed.
+
+##### Components (Structural part or building block of systems)
+
+The structural elements of software: Subsystems, modules, classes, functions -building blocks-. Components are usually implemented in source code in a programming language, but can also be other artifacts that make up the system.
+
+##### Relationships (To coupling of elements, enabling them to cooperate or exchange data)
+
+Interfaces, dependencies, associations. Components need to interact with other components, otherwise no separation of concerns (division of responsibility) would be possible.
+
+On the downside: Designing good interfaces is really difficult, and misunderstanding of interfaces is the source of many problems in software systems.
+
+##### Environment
+
+Every system has some relationships (aka interfaces, dependencies) to its environment:
+
+data, control flow of events are transferred to and from possibly different kinds of neighbors.
+
+##### Principles (Rules or points throughout the system or its development)
+
+A rule that holds for the whole system or several parts of it. Usually valid for several elements of the system. (Concept)
+
+##### Design and evolution 
+
+Cross-cutting and system-wide decisions might become necessary during both initial design and ongoing evolution and maintenance of systems.
+
+
+
+'''
+
+Make sure you know about the most important elements of any software architecture, namely components (building block of systems), relationships (dependencies, associations), the environment(all the things outside of your system) and principles (cross cutting topics or decisions).
+
+You should know that your design and architecture decisions might influence or relate to all of these elements.
+
+'''
+
+###### Exercise
+
+Name some common elements of software architecture definitions.
+
+What kind of things in your system might be influenced by architectural decisions?
+
+
+
+## LG 1-2: Goals and benefits of software architecture
+
+Software architects can justify the following essential goals and benefits of software architecture
+
+* Support design, implementation, maintenance and operation of systems
+* Achieve quality requirements such as reliability, maintainability, changeability, security, etc.
+* Achieve functional requirements or ensure that they can be met
+* Ensure that the system's structures and concepts are understood by all relevant stakeholders
+* Systematically reduce complexity
+* Specify architecturally relevant guidelines for implementation and operation.
+
+
+
+## LG 1-3: Software Architecture in Software Lifecycle
+
+Software architects understand their tasks and can integrate their results into the overall lifecycle of IT systems.
+
+* Identify the consequences of changes in functional requirements, quality requirements, technologies or the system environment in relation to software architecture
+* Elaborate on relationships between IT system and the supported business and operational process.
+
+Software Lifecycle (SLC), SDLC (Software Development Lifecycle)
+
+ssSLC: describes all phases of a software product planing-development-deployment, retirement.
+
+Initial development (at this stage architects and developers acquire knowledge of the application domain and technologies used to implement system) will be crucial for future development. More importantly, the architecture established at this stage will have a significant impact on the ease of future evolution. Architect s have to aware of timely revenue generation and time to market investment strategies in the long run.
+
+Often first release is not delivered after the initial development, but rather after several iterations during evolution, to ensure better alignment with customer needs and a more stable system. Release dates are usually determined both by business considerations and by the degree to which quality requirements are met. This puts architects in a position where they have to broker a suitable trade off between these, often conflict of interests.
+
+Over time, changes accumulate a point where software architecture of a system either loses its integrity and coherence or becomes obstacle that limits future changes.
+
+-Key words- servicing stage, phase out, close down
+
+###### Exercises
+
+* When has architecture the greatest or the least influence?
+* Reflect on the consequences of changes in functional requirements to architecture decisions.
+* Reflect on the consequences of changes in quality requirements on architecture decisions.
+* Imagine a that a single quality requirement (e.g. performance, robustness, understandability, etc.) is drastically changed. How might other quality attributes affected by this?
+
+## LG 1-4 Software Architects' task and responsibilities
+
+Software architects are responsible for achieving the required or necesary quality and creating the architecture design for a solution. Depending on the actual approach or processes model used the may align overall responsibilities of project management and/or other roles.
+
+
+
+Task and responsibilitees:
+
+* Clarify scrutiniye requirements and constraints and refine them if necessary. Together with functional requirements(required features),this includes the required quality characteristics (required constraints).
+* Decide how to decompose the system into building blocks, while determining dependencies and interfaces between building blocks.
+* Determine and decide on cross-cutting concepts (for instance persistence, communication, GUI. etc.)
+* Communicate and document the software architecture based on views, architectural patterns, cross-cutting and technical concepts.
+* Accompany realization and implementation of the architecture; integrate feedback fromrelevant stakeholders into architecture if necessary; review and ensure the consistency of source code and software architecture.
+* Analyze and evaluate software architecture, especially with the respect to risk involving the quality requirements,
+* Identify, highlight, and justify the consequences of architectural decisions to other stakeholders
+* They should independently recognize the necessity of iterations in all tasks and pint out possibilities for appropriate and relevant feedback.
+
+### Explanation
+
+No algorithmic approach. iteration to the rescue: As software architecture design is a highly creative task, there is no algorithmic way for achieving results. "appropriateness"
+
+Multiple factors influence architecture;
+
+Design, implementation decision; business and quality requirements, organizational and technical constraints, legal constraints, budget and time constraints, available technology, existing infrastructure, and so on...
+
+Iterative approaches and integrated feedback. (Does not mean Scrum or similar,)
+
+* early feedback
+* early risk (and problem) identification
+* more time to fiy problems and mitigate risks
+* better chances to adapt to changes in requirements, constraints, technology, team etc.
+* Opportunities to practice every activity in the development process, especially deploy and release-related activities.
+
+Software architecture is a team effort. But there should be one person on charge who can decide in case of doubt or if the team cannot easily come to a consensual decision.
+
+SWArch (with the development team) design and construct all elements that necessary for the development/operation/maintenance of sw.
+
+* building blocks as the structural elements of systems
+* interfaces bw building blocks or bw external systems(neighbor systems)
+* Cooperation of building blocks through interfaces
+* cross-cutting concept or rules
+* selection of appropriate technologies
+* adoption of suitable development and operation processes
+* evertything else might be require to develop/implementan d operate the system.
+
+Software architects need to fullfill six important tasks in oreder to design and develop successful systems based upon given functional and quality requirements:
+
+* Clarify requirements	(Requirements analysis, Domain experts, Product management)
+  * Design structures
+    * Communicate architecture	(Development team, management)
+    * Shepherd implementation
+  * Design cross-cutting Concepts
+    * Evaluate architecture
+    * Shepperd implementation
+
+! It always depends how much architecture, how much documentation, how much communication ...
+
+Appropriateness looks for additional considerations.
+
+
+
+#### Clarify requirements
+
+In case of missing, unclear, inconsistent or contradictory requirements, software architects need to actively clarify requirements in conjunction with the corresponding stakeholders. 
+
+So clarify;
+
+* Who are the **stakeholders** of the system
+* **Context** and **external interfaces**, expressing your system's relation to its communication partners (neighboring system and users). Show and specify the external interfaces, usually both system and user roles.
+* **Quality requirements**. These often fundamentally influence architectural decisions.
+* **Functional requirements** (clarify relevant functional requirements. You may not know everything in detail but you should have a good knowledge of the *architecturally* relevant ones- will be executed frequently, most important to stakeholders, critical timing or performance constraints, reads/updates/creates/moves large amount data, requires critical parts of your infrastructure) 
+* **Constraints** are facts/requirements/needs/limitations that constrain software architects in their freedom when making design and implementation decisions or decisions about the development process.
+* **Stability, validity, and importance** of all the points above.
+
+
+
+#### Design structures and concepts
+
+*Designing* belongs to the primary task of software architects. It means decisions and resolving potential conflicts between goals, requirements or constraints.
+
+Distinguish two separate aspects of designing:
+
+* Design structures: Source code elements of arbitrary sizes, subsystems, components, packages, namespaces, sometime more smaller elements like classes. Black box and white box manifestations.
+* Designing (cross-cutting) concepts: Concepts form the basis for conceptional integrity (consistency, homogeneity) of the architecture. They are important to achieve intrinsic qualities of your system. We call them cross-cutting as sometimes concepts cannot be handled by individual building blocks, but have to be applied to, or at. several architectural elements.
+
+##### Communicate architecture
+
+Software architects needc to cmmmunicate with various stakeholders about certain aspects of part of the system. Argumentation. discussion and convincing people, other parts involve (written) documentation.
+
+##### Shepherd implementation
+
+At the end, output of developers ultimately shapes how a system built. Documenting architectural decisions (structures, concepts or other stuff) does not necessarily mean the system will be built according to that documentation. Software architects need to make sure the system is built in the appropriate way, decisions are properly implemented and architectural principles are adhered to. Shepherding the implementation is the key activity for achieving this:
+
+* Identify those parts of the system and its implementation that violate or endanger consistency or somehow deviate from chosen architecture. Together with the development team, find appropriate ways to correct or mitigate these issues.
+* Identify potential design or implementation decisions which could improve the overall architecture. (developer can came up with cleaner, simpler, smarter, cheaper, quicker, less risky , more maintainable, resource effective improvement.)
+
+##### Evaluate Architecture
+
+Find out if (or if not) system, its architecture, and implementation can fullfill  or satisfy its quality requirements or if any of these requirements are at risk.
+
+In the context of software engineering, software quality refers to two related but distinct notions that exist wherever quality is defined in a business context:
+
+* Software functional quailty  reflects how ell it complies woth or conforms to a given design, based on functinal requiremetns or specifications.
+
+* Software structural quality refers to how it meets non-functional requirements that support delivery of the functional requirements, such as robustness or maintainability, the degre to whoch the software was produced correctly.
+
+  Mainly the second notion that we care for in order to guarantee the first notion over an extended period of time.
+
+
+
+## Software architects and other stakeholders
+
+**Relate the role of software architects to other stakeholders (R1)**
+
+Software architects are able to explain their role. They should adapt their contribution to software development in a specific context and in relation other stakeholders in particular to
+
+* product management and product owners
+* project managers
+* requirement engineers
+* developers
+* QA and testers
+* Enterprise architect and architecture board members
+
+Regardless of the specific model or process of development, software architects need to be aware of the potential multitude of different stakeholders who are relevant for a specific development.
+
+In many cases software architects will have at least following **four different** categories(**types**) of **stakeholders**:
+
+1) Req. eng/Domain experts/Product Management : requirement communication feasibility, using specific terminology etc.
+2) Project management/Enterprise Arch. (organizational constraints, resources, schedules)
+3) Sw Dev/HW Dev /IT(CI/CD) (detailed technical level)
+4) QA-Security Team (quality attributes)
+
+#### Collaboration with business and domain experts
+
+* clarify requirements
+* help identify conflicting requirements
+* support finding trade-offs between conflicting goals and requirements
+* explain the impact of certain requirements and constraints on other requirements, the architecture, implementation and operation of the system
+* support in prioritizing requirements and their development
+
+#### Collaboration with management stakeholders
+
+* technical consultancy: architects are consulted  by management concerning technical issues
+* risk management: architects point out explain technical risks to management
+* support in staffing
+* support in defining and sizing work packages or work-breakdown-structure
+
+#### Collaboration with technical stakeholders
+
+Within development teams, software architects shall:
+
+* communicate and explain architecture and architectural decisions
+* enable and prepare technical decisions
+* coach or help ti coach team members
+* moderate in the discussion and design of internal and external interfaces
+
+
+
+## LG 1-6: Development approach and software architecture
+
+
+
+Software architects are able to explain the influence of iterative approaches on architectural decisions.
+
+Due to inherent uncertainty, software architects often have to work and make decisions iteratively. To do so, they have to systematically obtain feedback from other stakeholders. 
