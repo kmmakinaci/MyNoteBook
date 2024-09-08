@@ -1,10 +1,23 @@
-# A Short Review for CPSA-F  Examination
+#  A Short Review for CPSA-F  Examination
 
 Disclaimer: These notes are directly sourced from the *Software Architecture Foundation - 2nd Edition: CPSA Foundation® Exam Preparation Book*. Some sentences are copied verbatim as they are part of a review, while others have been modified for quicker note-taking. The notes from the [publicly available sections of the book](https://books.google.de/books?id=iMLDEAAAQBAJ&printsec=frontcover&hl=tr&source=gbs_atb#v=onepage&q&f=false) to ensure compliance with copyright regulations. The rest reflect my personal understanding.
 
-## Chapter 1 : Introduction
+## Chapter 1 : Basic concepts of software architecture
 
-### LG 1-1 Fundamental organization
+### LG 1-1 : Definitions of software architecture
+
+**Discuss definitions of software architecture (R1)**
+
+Software architects know several definitions of software architecture (incl. ISO 42010/IEEE 1471, SEI, Booch, etc.) and can name their similarities:
+
+* Components/buildings blocks with interfaces and relationships
+* Building blocks as a general term, components as a special form thereof
+* Structures, cross-cutting concepts, principles
+* Architecture decisions and their consequences on the entire system and its life-cycle
+
+***Software architecture*** definition according to the IEEE 1471 : Software architecture is the fundamental organization of a system embodied in its components, their relationships to each other and to the environment, and the principles guiding its design and evolution.
+
+#### Fundamental organization
 
 The way things are ordered and each element is given its designated place. Fundamental because it must stand out clearly, be obvious to everyone who works on this system and act as the most profound guideline to be followed.
 
@@ -32,7 +45,20 @@ A rule that holds for the whole system or several parts of it. Usually valid for
 
 Cross-cutting and system-wide decisions might become necessary during both initial design and ongoing evolution and maintenance of systems.
 
+*SEI / Bass+2021* : The software architecture of a system is the set of structures needed to reason about the system, which comprise software elements, relations among them, and properties of both.
 
+*Galan & Perry* : The structure of the components of a program/system, their interrelationships, and principles and guidelines governing their design and evolution over time.
+
+**Commonalities of definitions**
+
+The following terms appear repeatedly in several definition of software architecture:
+
+* Component: Structural part or building block of systems.
+* Structure: An arrangement of interrelated elements (aka. components or building blocks) that together perform a common task.
+* Relationships/dependencies: The coupling of elements, enabling them to cooperate or exchange data.
+* Design or architecture decisions: A system or its architecture evolves from an arbitrary number of (design or architecture) decisions of all kinds.
+* Cross-cutting concepts / principles : Rules or heuristic valid at several locations or points through-out the system or its development.
+* Decomposition of larger things into smaller things. One of the golden rules of life (and computer science): If a problem is too large to handle all at once, break it down into more manageable units.-
 
 '''
 
@@ -41,14 +67,6 @@ Make sure you know about the most important elements of any software architectur
 You should know that your design and architecture decisions might influence or relate to all of these elements.
 
 '''
-
-###### Exercise
-
-Name some common elements of software architecture definitions.
-
-What kind of things in your system might be influenced by architectural decisions?
-
-
 
 ### LG 1-2: Goals and benefits of software architecture
 
@@ -332,6 +350,124 @@ Software architects should (and can) be explicit in their decisions: Never call 
 
 ## Chapter 2: Design and development of software architectures
 
+### LG 2-1 : Approaches and heuristic for architecture development
+
+Select and use approaches and heuristic for architecture development;
+
+Software architects are able to name, explain. and use the fundamental approaches of architecture, for example:
+
+* Top-down and bottom-up approaches to design (*)
+* View-based architecture development (*)
+* Iterative and incremental design (*)
+  * necessity of iterations, especially when decision-making is affected by uncertainties (*)
+  * necessity of feedback on design decisions(*)
+* Domain-driven design (-)
+* Evolutionary design (-)
+* Global analysis (-)
+* Model-driven architecture (-)
+
+There is no deterministic or algorithmic approach to software design, you should consider an iterative approach to designing your software and its architecture. These iterations exist in addition to the flow of the overall development process.
+
+### Building blocks
+
+Representation of a building block (black box and white box) can be immensely useful for software architecture. A single building block can be a black box in one communication, diagram or model, and a white box in others.
+
+**Properties of black box representations**
+
+As a black box hides internal structure, it adheres to the -> information hiding principle. Hiding internal things is an abstraction or simplification. When using the black box representation or simply the name of a building block, one does not need to consider all the internal details. This abstraction can simplify communication or documentation.
+
+In addition, you might use a black box to delegate responsibility for the design implementation of this  building block to somebody else.
+
+A black box hides:
+
+* Internal structure, that means internal building blocks and internal dependencies
+* Internal processing, algorithms or functions
+* Internal data and data structures
+
+A black box should have an appropriate name, and needs to expose the following in its description (black box template):
+
+* Its responsibility: what does this black box do , what is its function or service?
+* The provided interface(s): what functions, services or data does this black box provide?
+* The required interface(s): what other functions, services or data does this black box require to fulfill its responsibility?
+
+Use a bottom-up approach to:
+
+* Reduce risks
+* Build proof -of-concept implementations
+* Validate decisions or proposals, providing that they can work in practice
+* Build-up knowledge and experience in important areas, like new technologies, products or business domains 
+* Work from detailed, specific or concrete elements up to larger, more abstract ones.
+
+In some cases it can be useful if a black box provides some additional information about itself:
+
+* Additional attributes, like qualities: Is this black box capable of multi-user access, what is the maximum throughput, what are guaranteed, minimal or average response times and so on.
+* Known restrictions, risks or problems.
+
+**Properties of white box representations**
+
+As a white box is the "same thing" as its black box, it inherits all attributes of the black box, and adds the internal structure. In addition, we propose that a white box representation explains the reason why it is structured exactly in this specific way, sometimes called the **"design rationale"**
+
+A white-box representation of a building block should contain the following information (wb template):
+
+* Name of this white box
+* Reference or link to its black box
+* An overview (at best a diagram) of its internal structure, hsowing the contained black boxes plus their dependencies
+* Design rationale, the reason for this structure
+* A list or table of contained black boxes, each with name, responsibility and dependencies.
+
+A fundamental concept of building-block view in software architecture is the systematic on-demand refinement of black boxes to white boxes in order to increase levels of detail. This is a simple method to explain the static structure of any software system by starting at the context level, and applying stepwise refinement. Such stepwise refinement serves two different purposes: firstly it is a communication mechanism, facilitating, understanding of low-level structures by showing these structures on context. And secondly, you may start designing and implementing your system on any abstraction level and use a combination of bottom-up and top-down approaches during development.
+
+**Top-down approach**
+
+Start from general, abstract or bird's eye perspective and step into details. You may use a top-down approach within a single subsystem or component - this approach is not limited to the whole system. Top down approach could be used to split the whole system into several subsystems, each of which will be developed by its own team.
+
+Use a top-down approach to:
+
+* Keep an overview of multiple components or subsystems
+* Abstract away details that are not currently needed
+* Keep things consistent over various components
+* Work from abstract or large elements to specific or smaller ones.
+
+**Bottom-up approach**
+
+Think and work on a detailed level: Solve detailed problems, take detailed or low-level decisions. Later encapsulate (abstract away) these details, hiding them in higher-level abstractions, building blocks or components.
+
+Use a bottom-up approach to:
+
+* Reduce risks
+* Build proof-of-concept implementations
+* Validate decisions or proposals, proving that they can work in practice
+* Build-up knowledge and experience in important areas, like new technologies, products or business domains
+* Work from detailed, specific or concrete elements up to larger, more abstract ones.
+
+Top-down and bottom-up approaches complement each other nicely.
+
+**View-based architecture**
+
+View focus on specific concerns, parts or aspects of a system. They can be used to consider certain things in isolation, thereby applying the "separation of concerns" principle to architecture work.
+
+* Building block view (static structure) - component diagrams
+* Runtime view (interactions)   - state diagrams
+* Deployment view ()
+* context view (external interfaces) - use case diagrams (user diagrams)
+
+Use architecture views to:
+
+* Facilitate structural, runtime or hardware decisions, as these concerns can be discussed separately
+* Facilitate communication and documentation
+* Gain flexibility in the degree of detail shown in various views
+* Address specific stakeholder concerns (e.g. operational aspects are covered in the deployment view)
+
+**Recognize interdependencies and trade-offs between design decisions**
+
+Many decisions will have consequences that are hidden or indirect, but they might be grave.
+
+In software architecture and system development you should be aware of it and consider its consequences.
+
+* Great runtime performance (good) often created by caching, parallel execution, sophisticated pre-loading strategies and such, quite often increases code side and complexity(bad).
+
+  
+
 ### LG 2-4: Cross-cutting concepts
 
 Software architects are able to:
@@ -365,3 +501,6 @@ Often such concepts are used for knowledge-transfer between people and/or system
 **Risks involved in cross-cutting concepts**
 
 Similar to every standardization effort: If the standard is bad, systems using the standard will (likely) also be bad. If your cross-cutting concepts do not solve the underlying problems, then all components using or implementing those concepts will have issues.
+
+
+
