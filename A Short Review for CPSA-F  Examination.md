@@ -1,8 +1,10 @@
 # A Short Review for CPSA-F  Examination
 
-## Introduction
+Disclaimer: These notes are directly sourced from the *Software Architecture Foundation - 2nd Edition: CPSA Foundation® Exam Preparation Book*. Some sentences are copied verbatim as they are part of a review, while others have been modified for quicker note-taking. The notes from the [publicly available sections of the book](https://books.google.de/books?id=iMLDEAAAQBAJ&printsec=frontcover&hl=tr&source=gbs_atb#v=onepage&q&f=false) to ensure compliance with copyright regulations. The rest reflect my personal understanding.
 
-### Fundamental organization
+## Chapter 1 : Introduction
+
+### LG 1-1 Fundamental organization
 
 The way things are ordered and each element is given its designated place. Fundamental because it must stand out clearly, be obvious to everyone who works on this system and act as the most profound guideline to be followed.
 
@@ -48,7 +50,7 @@ What kind of things in your system might be influenced by architectural decision
 
 
 
-## LG 1-2: Goals and benefits of software architecture
+### LG 1-2: Goals and benefits of software architecture
 
 Software architects can justify the following essential goals and benefits of software architecture
 
@@ -61,7 +63,7 @@ Software architects can justify the following essential goals and benefits of so
 
 
 
-## LG 1-3: Software Architecture in Software Lifecycle
+### LG 1-3: Software Architecture in Software Lifecycle
 
 Software architects understand their tasks and can integrate their results into the overall lifecycle of IT systems.
 
@@ -87,7 +89,7 @@ Over time, changes accumulate a point where software architecture of a system ei
 * Reflect on the consequences of changes in quality requirements on architecture decisions.
 * Imagine a that a single quality requirement (e.g. performance, robustness, understandability, etc.) is drastically changed. How might other quality attributes affected by this?
 
-## LG 1-4 Software Architects' task and responsibilities
+### LG 1-4 Software Architects' task and responsibilities
 
 Software architects are responsible for achieving the required or necesary quality and creating the architecture design for a solution. Depending on the actual approach or processes model used the may align overall responsibilities of project management and/or other roles.
 
@@ -103,8 +105,6 @@ Task and responsibilitees:
 * Analyze and evaluate software architecture, especially with the respect to risk involving the quality requirements,
 * Identify, highlight, and justify the consequences of architectural decisions to other stakeholders
 * They should independently recognize the necessity of iterations in all tasks and pint out possibilities for appropriate and relevant feedback.
-
-### Explanation
 
 No algorithmic approach. iteration to the rescue: As software architecture design is a highly creative task, there is no algorithmic way for achieving results. "appropriateness"
 
@@ -146,8 +146,6 @@ Software architects need to fullfill six important tasks in oreder to design and
 
 Appropriateness looks for additional considerations.
 
-
-
 #### Clarify requirements
 
 In case of missing, unclear, inconsistent or contradictory requirements, software architects need to actively clarify requirements in conjunction with the corresponding stakeholders. 
@@ -172,18 +170,18 @@ Distinguish two separate aspects of designing:
 * Design structures: Source code elements of arbitrary sizes, subsystems, components, packages, namespaces, sometime more smaller elements like classes. Black box and white box manifestations.
 * Designing (cross-cutting) concepts: Concepts form the basis for conceptional integrity (consistency, homogeneity) of the architecture. They are important to achieve intrinsic qualities of your system. We call them cross-cutting as sometimes concepts cannot be handled by individual building blocks, but have to be applied to, or at. several architectural elements.
 
-##### Communicate architecture
+#### Communicate architecture
 
 Software architects needc to cmmmunicate with various stakeholders about certain aspects of part of the system. Argumentation. discussion and convincing people, other parts involve (written) documentation.
 
-##### Shepherd implementation
+#### Shepherd implementation
 
 At the end, output of developers ultimately shapes how a system built. Documenting architectural decisions (structures, concepts or other stuff) does not necessarily mean the system will be built according to that documentation. Software architects need to make sure the system is built in the appropriate way, decisions are properly implemented and architectural principles are adhered to. Shepherding the implementation is the key activity for achieving this:
 
 * Identify those parts of the system and its implementation that violate or endanger consistency or somehow deviate from chosen architecture. Together with the development team, find appropriate ways to correct or mitigate these issues.
 * Identify potential design or implementation decisions which could improve the overall architecture. (developer can came up with cleaner, simpler, smarter, cheaper, quicker, less risky , more maintainable, resource effective improvement.)
 
-##### Evaluate Architecture
+#### Evaluate Architecture
 
 Find out if (or if not) system, its architecture, and implementation can fullfill  or satisfy its quality requirements or if any of these requirements are at risk.
 
@@ -197,7 +195,7 @@ In the context of software engineering, software quality refers to two related b
 
 
 
-## Software architects and other stakeholders
+### LG 1-5 Software architects and other stakeholders
 
 **Relate the role of software architects to other stakeholders (R1)**
 
@@ -245,10 +243,125 @@ Within development teams, software architects shall:
 
 
 
-## LG 1-6: Development approach and software architecture
+### LG 1-6: Development approach and software architecture
 
 
 
 Software architects are able to explain the influence of iterative approaches on architectural decisions.
 
 Due to inherent uncertainty, software architects often have to work and make decisions iteratively. To do so, they have to systematically obtain feedback from other stakeholders. 
+
+Architecture work needs feedback, which is inherent feature of iterative development approaches.
+
+**Benefits of iterative-incremental feedback**
+
+* early feedback
+
+* early rosk(and problem) identification
+
+* more time to fix problems and mitigate risks
+
+* better chances to adapt to changes in requirements, constraints, technology, team etc.
+
+* opportunities to practice every activity in the development process, especially deploy and release-related activities.
+
+  **Deming-cycle**:  Plan-Do-Check-Adjust . These four steps basically from the basis of every software development process as a software architect, you should actively care for getting and giving sufficient and timely feedback (push and pull) from relevant stakeholders.
+
+  Plan : Make architectural decisions to meet the known/given requirements
+
+  Do : Execute the plan, implement these decisions
+
+  Check : Get feedback and evaluate the results from Do phase
+
+  Adjust (Act) : Improve or remove decision																	
+
+
+### LG 1-7 Short- and long-term goals
+
+Software architects can:
+
+* explain long-term quality requirements and their differentiation from (short-term) project goals
+* explain potential conflicts between short-term and long-term goals, in order to find suitable solution for all stakeholders
+* Identify and specify quality requirements.
+
+
+
+Lifespan of many software systems are much longer than the duration of typical development projects.
+
+Let's clarify the term project and distinguish from it system.
+
+**Project** A projects in software development or software engineering is usually a collaborative effort to achieve clearly defined goals, in most cases within limited time frame:
+
+* several people
+* the outcome (goal) of their collaboration is clearly defined
+* the amount of time these people can invest is limited, as the amount of money that can be spent during the project. You can even replace project with *sprint* when your organization uses Scrum.
+
+**System**
+
+The application , program, software or thing a development team is working on, which is usually the outcome of one or more projects. A system may be defined as a set of components which accomplish a set of predetermined goals or fulfill predetermined requirements.
+
+Usually lifespan of a system is longer than it took to build that system - therefore goals related to that system are often long-term goals.
+
+'''
+
+* Project goals are often short-term
+* Architecture or system goals are often long-term
+* Architectural goals usually contribute to achievement of project goals, but they can also be in conflict with each other.
+
+'''
+
+### LG 1-8 : Explicit statements versus implicit assumptions
+
+Software architects:
+
+* Should explicitly present assumptions or prerequisites, therefore avoiding implicit assumptions
+* Know that implicit assumptions can lead to potential misunderstandings between stakeholders
+* Formulate implicitly, if t is appropriate in the given context.
+
+Software architects should (and can) be explicit in their decisions: Never call a decision obvious, as whilst it might be obvious to you, it might not be so obvious to others. It is better to explain(important) decisions explicitly, as this makes them easier to understand and avoids any misunderstandings,
+
+* Explicitly documenting quality requirements , e.g. form of quality scenarios
+* Explicitly documenting architecture decisions
+* Using clear and unambiguous terminology, especially domain/business terminology, e.g. by using an explicit domain model or a glossary for your system
+* Explicitly defining a cross-cutting concepts
+* Explicitly considering different perspectives before making difficult decisions, for example quality requirements, domain structure, external interfaces, building-block structure, technical infrastructure, etc.
+* Explicitly developing cross-cutting concepts to improve the -> consistency -> (conceptional integrity) of your system
+* Explicitly analyzing and evaluating your system, its architecture and code in order to get feedback on your architectural work 
+
+
+
+## Chapter 2: Design and development of software architectures
+
+### LG 2-4: Cross-cutting concepts
+
+Software architects are able to:
+
+* Explain significance of such cross-cutting concepts
+* Decide on and design cross-cutting concepts, for example persistance, communication, GUI, error handliing, concurrency, energy efficiency
+* Identify and asses potential interdependencies between decisions
+* Know that how such cross-cutting concepts may be re-used throughout the system
+
+Some architectural decisions will concern or affect topics relevant for multiple or all elements within the architecture. A typical (low-level) example is logging, another example are security related topics.
+
+Such concepts include overreaching or cross-cutting issues, which often affect several building blocks of the system. These concepts can have a significant impact on building block structures or their omplmenetation. They often represent central technical decisions.
+
+Cross- cutting concepts can be used to solve recurring problems (aka cross-cutting concerns) that have to be addressed within ,multiple elements of the architecture.
+
+Some examples of such cross-cutting concerns are:
+
+* Fundamental technology decisions relevant throughout the system or within several building blocks
+* Selection of frameworks or third party tools/libraries
+* Usage of such technologies within the system, or specific purposes
+* Conventions for interfaces between building blocks
+
+**Significance of cross-cutting concepts**
+
+Cross-cutting decisions can help to ensure *consistency*: Topics governed by cross-cutting concerns will (most likely) be implemented in the same manner, based upon the same technology, using the same patterns or conventions.
+
+Such consistency facilitates understanding and makes the corresponding parts or elements of the system similar in these specific aspects.
+
+Often such concepts are used for knowledge-transfer between people and/or systems. A concept that has helped solve a specific problem in one system might be re-used in another system.
+
+**Risks involved in cross-cutting concepts**
+
+Similar to every standardization effort: If the standard is bad, systems using the standard will (likely) also be bad. If your cross-cutting concepts do not solve the underlying problems, then all components using or implementing those concepts will have issues.
