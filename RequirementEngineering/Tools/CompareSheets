@@ -1,0 +1,65 @@
+"Below is a macro that will compare 'Column D' in both sheets
+then checks 'Column L' if a match is found.
+It will then highlight rows in red for changed values, green for new rows,
+and add a new column with either "changed" or "new" in the first sheet.
+Please adjust the column numbers and headers as needed.
+sheet1 should include the updated data and sheet2 should include the original data.
+"
+Sub CompareSheets()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim rng1 As Range, rng2 As Range
+    Dim dict As Object
+    Dim cell As Range, foundCell As Range
+    Dim addedColumn As String
+    
+    ' Set worksheets
+    Set ws1 = ThisWorkbook.Sheets("Sheet1") ' First tab
+    Set ws2 = ThisWorkbook.Sheets("Sheet2") ' Second tab
+    
+    ' Find last row in each sheet
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 4).End(xlUp).Row ' Column D
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 4).End(xlUp).Row ' Column D
+    
+    ' Set ranges
+    Set rng1 = ws1.Range("D2:D" & lastRow1) ' Column D in first sheet
+    Set rng2 = ws2.Range("D2:D" & lastRow2) ' Column D in second sheet
+    
+    ' Create dictionary to store Column D values from second sheet
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Store Column D values from second sheet in dictionary with corresponding Column L
+    Dim i As Long
+    For i = 2 To lastRow2
+        dict(ws2.Cells(i, 4).Value) = ws2.Cells(i, 12).Value ' Store Column L as value
+    Next i
+    
+    ' Add new column header if not present
+    addedColumn = "M"
+    ws1.Cells(1, 13).Value = "Status" ' Column M (adjust if needed)
+    
+    ' Loop through first sheet data
+    For Each cell In rng1
+        Dim rowIndex As Long
+        rowIndex = cell.Row
+        Dim valueD As String, valueL1 As String
+        
+        valueD = cell.Value
+        valueL1 = ws1.Cells(rowIndex, 12).Value ' Column L in first sheet
+        
+        If dict.exists(valueD) Then
+            ' Column D exists in second sheet, compare Column L
+            If dict(valueD) <> valueL1 Then
+                ' Different Column L value -> Mark as "changed" and color red
+                ws1.Rows(rowIndex).Interior.Color = RGB(255, 0, 0) ' Red
+                ws1.Cells(rowIndex, 13).Value = "Changed"
+            End If
+        Else
+            ' Column D does not exist in second sheet -> Mark as "new" and color green
+            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0) ' Green
+            ws1.Cells(rowIndex, 13).Value = "New"
+        End If
+    Next cell
+    
+    MsgBox "Comparison complete!", vbInformation
+End Sub
