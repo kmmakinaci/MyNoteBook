@@ -1,0 +1,123 @@
+"Compare and Highlight Differences by Excel VBA
+This VBA script compares two sheets in an Excel workbook and highlights differences between the two sheets.
+It identifies new, changed, and deleted rows based on a common identifier column.
+The script also highlights differences in the "Description" column between the two sheets.
+"
+Sub CompareAndHighlightDifferences()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim lastCol2 As Long
+    Dim dict As Object
+    Dim cell As Range
+    Dim addedColumn As String
+    Dim i As Long, j As Long
+    Dim originCol As Integer, descCol As Integer
+    Dim rowIndex As Long
+    Dim valueOrigin As String, valueDesc1 As String, valueDesc2 As String
+    
+    ' Set worksheets
+    Set ws1 = ThisWorkbook.Sheets("Sheet1")
+    Set ws2 = ThisWorkbook.Sheets("Sheet2")
+    
+    ' Find last row in each sheet
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 1).End(xlUp).Row
+    
+    ' Find last valid column in Sheet2
+    lastCol2 = ws2.Cells(1, ws2.Columns.Count).End(xlToLeft).Column
+
+    ' Find column indexes dynamically
+    originCol = 0
+    descCol = 0
+    
+    For j = 1 To lastCol2
+        If ws2.Cells(1, j).Value = "Origin ID" Then originCol = j
+        If ws2.Cells(1, j).Value = "Description" Then descCol = j
+    Next j
+    
+    ' Ensure columns are found
+    If originCol = 0 Or descCol = 0 Then
+        MsgBox "Error: 'Origin ID' or 'Description' column not found!", vbCritical
+        Exit Sub
+    End If
+    
+    ' Create dictionary to store data from Sheet2
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Store "Origin ID" and corresponding row data
+    For i = 2 To lastRow2
+        dict(ws2.Cells(i, originCol).Value) = ws2.Cells(i, descCol).Value
+    Next i
+    
+    ' Add new column header for status if not present
+    addedColumn = lastCol2 + 1
+    ws1.Cells(1, addedColumn).Value = "Status"
+    
+    ' Loop through Sheet1 data
+    For Each cell In ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol))
+        rowIndex = cell.Row
+        valueOrigin = cell.Value
+        valueDesc1 = ws1.Cells(rowIndex, descCol).Value ' "Description" from Sheet1
+        
+        If dict.exists(valueOrigin) Then
+            ' "Origin ID" exists in Sheet2
+            valueDesc2 = dict(valueOrigin) ' "Description" from Sheet2
+            
+            If valueDesc1 = valueDesc2 Then
+                ' If "Description" matches, copy full row A to lastCol2 from Sheet2 to Sheet1
+                ws1.Cells(rowIndex, addedColumn).Value = "Unchanged"
+            Else
+                ' Highlight differences
+                HighlightDifferences ws1.Cells(rowIndex, descCol), valueDesc1, valueDesc2
+                ws1.Cells(rowIndex, addedColumn).Value = "Changed"
+            End If
+        Else
+            ' If "Origin ID" is missing in Sheet2, mark as "New"
+            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0) ' Green
+            ws1.Cells(rowIndex, addedColumn).Value = "New"
+        End If
+    Next cell
+
+    ' Now check for missing "Origin ID" in Sheet1 (i.e., deleted rows)
+    Dim missingRow As Long
+    missingRow = lastRow1 + 1 ' Start after the last row in Sheet1
+
+    For i = 2 To lastRow2
+        valueOrigin = ws2.Cells(i, originCol).Value
+        If Application.WorksheetFunction.CountIf(ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol)), valueOrigin) = 0 Then
+            ' If the "Origin ID" is in Sheet2 but NOT in Sheet1 → Mark it as deleted
+            ws1.Rows(missingRow).Value = ws2.Rows(i).Value ' Copy full row
+            ws1.Rows(missingRow).Interior.Color = RGB(255, 0, 0) ' Red
+            ws1.Cells(missingRow, addedColumn).Value = "Deleted"
+            missingRow = missingRow + 1
+        End If
+    Next i
+    
+    MsgBox "Comparison and highlighting complete!", vbInformation
+End Sub
+
+' Subroutine to highlight differences
+Sub HighlightDifferences(cell As Range, text1 As String, text2 As String)
+    Dim i As Integer
+    Dim minLen As Integer
+    Dim maxLen As Integer
+    Dim matchCount As Integer
+    
+    minLen = Application.WorksheetFunction.Min(Len(text1), Len(text2))
+    maxLen = Application.WorksheetFunction.Max(Len(text1), Len(text2))
+    
+    ' Reset formatting first
+    cell.Font.Color = RGB(0, 0, 0) ' Default black
+
+    ' Compare character-by-character
+    For i = 1 To minLen
+        If Mid(text1, i, 1) <> Mid(text2, i, 1) Then
+            cell.Characters(i, 1).Font.Color = RGB(0, 0, 255) ' Highlight new content in BLUE
+        End If
+    Next i
+    
+    ' Highlight extra characters in Sheet1 (new content)
+    If Len(text1) > Len(text2) Then
+        cell.Characters(minLen + 1, Len(text1) - minLen).Font.Color = RGB(0, 0, 255) ' Blue
+    End If
+End Sub
