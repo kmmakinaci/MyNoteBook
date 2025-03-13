@@ -172,3 +172,36 @@ Sub CopySelectedColumns(ws1 As Worksheet, ws2 As Worksheet, rowIndex As Long, or
         Next i
     End If
 End Sub
+Sub HighlightDifferences(cell As Range, oldText As String, newText As String)
+    Dim startPos As Integer, endPos As Integer
+    Dim i As Integer
+    Dim diffFound As Boolean
+    
+    ' Clear previous formatting
+    cell.Font.Color = RGB(0, 0, 0) ' Default black text
+    cell.Font.Strikethrough = False
+    
+    ' Find differences and apply formatting
+    diffFound = False
+    For i = 1 To Len(newText)
+        If i > Len(oldText) Or Mid(newText, i, 1) <> Mid(oldText, i, 1) Then
+            startPos = i
+            endPos = i
+            diffFound = True
+            Exit For
+        End If
+    Next i
+    
+    If diffFound Then
+        ' Highlight new text in blue
+        With cell.Characters(startPos, Len(newText) - startPos + 1).Font
+            .Color = RGB(0, 0, 255)
+        End With
+        
+        ' Strike-through removed text from oldText
+        With cell.Characters(startPos, Len(oldText) - startPos + 1).Font
+            .Strikethrough = True
+            .Color = RGB(255, 0, 0) ' Red for deleted text
+        End With
+    End If
+End Sub
