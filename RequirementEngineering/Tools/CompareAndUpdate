@@ -1,8 +1,3 @@
-" Compare and Update Sheets based on User Selection
-This VBA script compares two sheets in an Excel workbook based on a common identifier column.
-It allows the user to select which columns to copy from the second sheet to the first sheet for unchanged rows.
-The script highlights differences in the "Description" column between the two sheets and generates a change report.
-"
 Sub CompareSheetsWithUserSelection()
     Dim ws1 As Worksheet, ws2 As Worksheet
     Dim lastRow1 As Long, lastRow2 As Long
@@ -48,17 +43,26 @@ Sub CompareSheetsWithUserSelection()
         Exit Sub
     End If
     
-    ' Ask user which columns to copy
+    ' Ask user which columns to copy using numbered input
     Dim colNames As String, colList As Variant, selectedColStr As String
-    colNames = GetColumnNames(ws2, lastCol2)
-    selectedColStr = InputBox("Enter column names to copy (comma-separated):" & vbNewLine & colNames, "Select Columns")
+    Dim columnNumbers As Variant, colNum As Integer
+    
+    colNames = "Select columns to copy by entering their numbers (comma-separated):" & vbNewLine
+    For j = 1 To lastCol2
+        colNames = colNames & j & ": " & ws2.Cells(1, j).Value & vbNewLine
+    Next j
+    
+    selectedColStr = InputBox(colNames, "Select Columns")
     
     If selectedColStr = "" Then
-        MsgBox "No columns selected. Skipping unchanged row copying.", vbExclamation
+        MsgBox "No columns selected. Skipping copying.", vbExclamation
     Else
-        colList = Split(selectedColStr, ",")
-        For i = LBound(colList) To UBound(colList)
-            selectedCols(Trim(colList(i))) = True
+        columnNumbers = Split(selectedColStr, ",")
+        For i = LBound(columnNumbers) To UBound(columnNumbers)
+            colNum = Val(Trim(columnNumbers(i)))
+            If colNum > 0 And colNum <= lastCol2 Then
+                selectedCols(ws2.Cells(1, colNum).Value) = colNum
+            End If
         Next i
     End If
     
@@ -81,51 +85,29 @@ Sub CompareSheetsWithUserSelection()
     For Each cell In ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol))
         rowIndex = cell.Row
         valueOrigin = cell.Value
-        valueDesc1 = ws1.Cells(rowIndex, descCol).Value ' "Description" from Sheet1
+        valueDesc1 = ws1.Cells(rowIndex, descCol).Value
         
         If ignoreSpaces Then valueDesc1 = Trim(valueDesc1)
         If ignoreCase Then valueDesc1 = LCase(valueDesc1)
         
         If dict.exists(valueOrigin) Then
-            ' "Origin ID" exists in Sheet2
-            valueDesc2 = dict(valueOrigin) ' "Description" from Sheet2
-            
+            valueDesc2 = dict(valueOrigin)
             If ignoreSpaces Then valueDesc2 = Trim(valueDesc2)
             If ignoreCase Then valueDesc2 = LCase(valueDesc2)
             
             If valueDesc1 = valueDesc2 Then
-                ' If "Description" matches, copy selected columns
                 ws1.Cells(rowIndex, addedColumn).Value = "Unchanged"
-                CopySelectedColumns ws1, ws2, rowIndex, valueOrigin, selectedCols, lastCol2
+                CopySelectedColumns ws1, ws2, rowIndex, valueOrigin, selectedCols
             Else
-                ' Highlight differences
-                HighlightDifferences ws1.Cells(rowIndex, descCol), valueDesc1, valueDesc2
                 ws1.Cells(rowIndex, addedColumn).Value = "Changed"
                 reportText = reportText & valueOrigin & ",Changed," & valueDesc2 & "," & valueDesc1 & vbNewLine
             End If
         Else
-            ' If "Origin ID" is missing in Sheet2, mark as "New"
-            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0) ' Green
+            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0)
             ws1.Cells(rowIndex, addedColumn).Value = "New"
             reportText = reportText & valueOrigin & ",New,," & valueDesc1 & vbNewLine
         End If
     Next cell
-
-    ' Now check for missing "Origin ID" in Sheet1 (i.e., deleted rows)
-    Dim missingRow As Long
-    missingRow = lastRow1 + 1 ' Start after the last row in Sheet1
-
-    For i = 2 To lastRow2
-        valueOrigin = ws2.Cells(i, originCol).Value
-        If Application.WorksheetFunction.CountIf(ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol)), valueOrigin) = 0 Then
-            ' Mark as deleted
-            ws1.Rows(missingRow).Value = ws2.Rows(i).Value ' Copy full row
-            ws1.Rows(missingRow).Interior.Color = RGB(255, 0, 0) ' Red
-            ws1.Cells(missingRow, addedColumn).Value = "Deleted"
-            reportText = reportText & valueOrigin & ",Deleted," & ws2.Cells(i, descCol).Value & "," & vbNewLine
-            missingRow = missingRow + 1
-        End If
-    Next i
     
     ' Generate report if requested
     If generateReport Then
@@ -138,70 +120,22 @@ Sub CompareSheetsWithUserSelection()
         Close #fileNum
         MsgBox "Report saved at: " & reportPath, vbInformation, "Report Generated"
     End If
-
+    
     MsgBox "Comparison and copying complete!", vbInformation
 End Sub
 
-' Function to get column names as a comma-separated string
-Function GetColumnNames(ws As Worksheet, lastCol As Long) As String
-    Dim colNames As String
-    Dim j As Long
-    For j = 1 To lastCol
-        If ws.Cells(1, j).Value <> "" Then
-            colNames = colNames & ws.Cells(1, j).Value & ", "
-        End If
-    Next j
-    GetColumnNames = Left(colNames, Len(colNames) - 2) ' Remove last comma
-End Function
-
 ' Subroutine to copy only selected columns
-Sub CopySelectedColumns(ws1 As Worksheet, ws2 As Worksheet, rowIndex As Long, originValue As String, selectedCols As Object, lastCol As Long)
+Sub CopySelectedColumns(ws1 As Worksheet, ws2 As Worksheet, rowIndex As Long, originValue As String, selectedCols As Object)
     Dim colName As String
     Dim colIndex As Integer
     Dim ws2Row As Range
-    Dim i As Integer
     
     ' Find the row in Sheet2 matching the originValue
     Set ws2Row = ws2.Range(ws2.Cells(2, 1), ws2.Cells(ws2.Rows.Count, 1)).Find(originValue, LookAt:=xlWhole)
     If Not ws2Row Is Nothing Then
-        For i = 1 To lastCol
-            colName = ws2.Cells(1, i).Value
-            If selectedCols.exists(colName) Then
-                ws1.Cells(rowIndex, i).Value = ws2Row.Cells(1, i).Value
-            End If
-        Next i
-    End If
-End Sub
-Sub HighlightDifferences(cell As Range, oldText As String, newText As String)
-    Dim startPos As Integer, endPos As Integer
-    Dim i As Integer
-    Dim diffFound As Boolean
-    
-    ' Clear previous formatting
-    cell.Font.Color = RGB(0, 0, 0) ' Default black text
-    cell.Font.Strikethrough = False
-    
-    ' Find differences and apply formatting
-    diffFound = False
-    For i = 1 To Len(newText)
-        If i > Len(oldText) Or Mid(newText, i, 1) <> Mid(oldText, i, 1) Then
-            startPos = i
-            endPos = i
-            diffFound = True
-            Exit For
-        End If
-    Next i
-    
-    If diffFound Then
-        ' Highlight new text in blue
-        With cell.Characters(startPos, Len(newText) - startPos + 1).Font
-            .Color = RGB(0, 0, 255)
-        End With
-        
-        ' Strike-through removed text from oldText
-        With cell.Characters(startPos, Len(oldText) - startPos + 1).Font
-            .Strikethrough = True
-            .Color = RGB(255, 0, 0) ' Red for deleted text
-        End With
+        For Each colName In selectedCols.keys
+            colIndex = selectedCols(colName)
+            ws1.Cells(rowIndex, colIndex).Value = ws2Row.Cells(1, colIndex).Value
+        Next colName
     End If
 End Sub
