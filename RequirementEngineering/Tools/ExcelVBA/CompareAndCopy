@@ -1,0 +1,90 @@
+"CompareAndCopySheets - Compare and copy data between two sheets based on a common column value
+- Detect columns by header names ("Origin ID" and "Description") instead of hardcoded letters  
+- Automatically find the last valid column in Sheet2 to copy all relevant data  
+- Use a dictionary for efficient lookups and row mapping  
+- Copy full row data from Sheet2 to Sheet1 if both "Origin ID" and "Description" match  
+- Highlight changed rows in red and mark them as "Changed"  
+- Highlight new rows in green and mark them as "New"  
+- Add a "Status" column to indicate row state 
+"
+Sub CompareAndCopySheetsByHeaders()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim lastCol2 As Long
+    Dim dict As Object
+    Dim cell As Range
+    Dim addedColumn As String
+    Dim i As Long, j As Long
+    Dim originCol As Integer, descCol As Integer
+    Dim header As Range, colCount As Integer
+
+    ' Set worksheets
+    Set ws1 = ThisWorkbook.Sheets("Sheet1") ' First tab
+    Set ws2 = ThisWorkbook.Sheets("Sheet2") ' Second tab
+    
+    ' Find last row in each sheet
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row ' Find last row in Sheet1 (Column A)
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 1).End(xlUp).Row ' Find last row in Sheet2 (Column A)
+    
+    ' Find last valid column in Sheet2 (by checking the header row)
+    lastCol2 = ws2.Cells(1, ws2.Columns.Count).End(xlToLeft).Column
+
+    ' Find column indexes by header names
+    originCol = 0
+    descCol = 0
+    
+    ' Loop through the first row to find "Origin ID" and "Description"
+    For j = 1 To lastCol2
+        If ws2.Cells(1, j).Value = "Origin ID" Then originCol = j
+        If ws2.Cells(1, j).Value = "Description" Then descCol = j
+    Next j
+    
+    ' Ensure both columns are found
+    If originCol = 0 Or descCol = 0 Then
+        MsgBox "Error: 'Origin ID' or 'Description' column not found!", vbCritical
+        Exit Sub
+    End If
+    
+    ' Create dictionary to store data from Sheet2 (based on 'Origin ID')
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Store 'Origin ID' values and corresponding full row data from Sheet2
+    For i = 2 To lastRow2
+        dict(ws2.Cells(i, originCol).Value) = ws2.Range(ws2.Cells(i, 1), ws2.Cells(i, lastCol2)).Value
+    Next i
+    
+    ' Add new column header for status if not present
+    addedColumn = lastCol2 + 1 ' Next empty column
+    ws1.Cells(1, addedColumn).Value = "Status"
+    
+    ' Loop through first sheet data
+    For Each cell In ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol))
+        Dim rowIndex As Long
+        rowIndex = cell.Row
+        Dim valueOrigin As String, valueDesc1 As String, valueDesc2 As String
+        
+        valueOrigin = cell.Value
+        valueDesc1 = ws1.Cells(rowIndex, descCol).Value ' Get "Description" value in Sheet1
+        
+        If dict.exists(valueOrigin) Then
+            ' "Origin ID" exists in Sheet2
+            valueDesc2 = ws2.Cells(Application.Match(valueOrigin, ws2.Columns(originCol), 0), descCol).Value
+            
+            If valueDesc1 = valueDesc2 Then
+                ' If "Description" matches, copy full row A to lastCol2 from Sheet2 to Sheet1
+                ws1.Range(ws1.Cells(rowIndex, 1), ws1.Cells(rowIndex, lastCol2)).Value = dict(valueOrigin)
+                ws1.Cells(rowIndex, addedColumn).Value = "Unchanged"
+            Else
+                ' If "Description" is different, highlight row red and mark "Changed"
+                ws1.Rows(rowIndex).Interior.Color = RGB(255, 0, 0) ' Red
+                ws1.Cells(rowIndex, addedColumn).Value = "Changed"
+            End If
+        Else
+            ' If "Origin ID" is missing in Sheet2, highlight row green and mark "New"
+            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0) ' Green
+            ws1.Cells(rowIndex, addedColumn).Value = "New"
+        End If
+    Next cell
+    
+    MsgBox "Comparison and copy complete!", vbInformation
+End Sub

@@ -1,0 +1,141 @@
+Sub CompareSheetsWithUserSelection()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim lastCol2 As Long
+    Dim dict As Object
+    Dim cell As Range
+    Dim addedColumn As String
+    Dim i As Long, j As Long
+    Dim originCol As Integer, descCol As Integer
+    Dim rowIndex As Long
+    Dim valueOrigin As String, valueDesc1 As String, valueDesc2 As String
+    Dim ignoreCase As Boolean, ignoreSpaces As Boolean, generateReport As Boolean
+    Dim selectedCols As Object
+    Dim reportText As String
+    
+    ' Ask user for options
+    ignoreCase = MsgBox("Ignore case differences?", vbYesNo + vbQuestion, "Comparison Options") = vbYes
+    ignoreSpaces = MsgBox("Ignore extra spaces?", vbYesNo + vbQuestion, "Comparison Options") = vbYes
+    generateReport = MsgBox("Generate change report?", vbYesNo + vbQuestion, "Comparison Options") = vbYes
+    
+    ' Set worksheets
+    Set ws1 = ThisWorkbook.Sheets("Sheet1")
+    Set ws2 = ThisWorkbook.Sheets("Sheet2")
+    
+    ' Find last row and column in each sheet
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 1).End(xlUp).Row
+    lastCol2 = ws2.Cells(1, ws2.Columns.Count).End(xlToLeft).Column
+
+    ' Find column indexes dynamically
+    originCol = 0
+    descCol = 0
+    Set selectedCols = CreateObject("Scripting.Dictionary")
+    
+    For j = 1 To lastCol2
+        If ws2.Cells(1, j).Value = "Origin ID" Then originCol = j
+        If ws2.Cells(1, j).Value = "Description" Then descCol = j
+    Next j
+    
+    ' Ensure columns are found
+    If originCol = 0 Or descCol = 0 Then
+        MsgBox "Error: 'Origin ID' or 'Description' column not found!", vbCritical
+        Exit Sub
+    End If
+    
+    ' Ask user which columns to copy using numbered input
+    Dim colNames As String, colList As Variant, selectedColStr As String
+    Dim columnNumbers As Variant, colNum As Integer
+    
+    colNames = "Select columns to copy by entering their numbers (comma-separated):" & vbNewLine
+    For j = 1 To lastCol2
+        colNames = colNames & j & ": " & ws2.Cells(1, j).Value & vbNewLine
+    Next j
+    
+    selectedColStr = InputBox(colNames, "Select Columns")
+    
+    If selectedColStr = "" Then
+        MsgBox "No columns selected. Skipping copying.", vbExclamation
+    Else
+        columnNumbers = Split(selectedColStr, ",")
+        For i = LBound(columnNumbers) To UBound(columnNumbers)
+            colNum = Val(Trim(columnNumbers(i)))
+            If colNum > 0 And colNum <= lastCol2 Then
+                selectedCols(ws2.Cells(1, colNum).Value) = colNum
+            End If
+        Next i
+    End If
+    
+    ' Create dictionary to store data from Sheet2
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Store "Origin ID" and corresponding row data
+    For i = 2 To lastRow2
+        dict(ws2.Cells(i, originCol).Value) = ws2.Cells(i, descCol).Value
+    Next i
+    
+    ' Add new column header for status if not present
+    addedColumn = lastCol2 + 1
+    ws1.Cells(1, addedColumn).Value = "Status"
+    
+    ' Prepare report
+    reportText = "Origin ID,Change Type,Old Description,New Description" & vbNewLine
+    
+    ' Loop through Sheet1 data
+    For Each cell In ws1.Range(ws1.Cells(2, originCol), ws1.Cells(lastRow1, originCol))
+        rowIndex = cell.Row
+        valueOrigin = cell.Value
+        valueDesc1 = ws1.Cells(rowIndex, descCol).Value
+        
+        If ignoreSpaces Then valueDesc1 = Trim(valueDesc1)
+        If ignoreCase Then valueDesc1 = LCase(valueDesc1)
+        
+        If dict.exists(valueOrigin) Then
+            valueDesc2 = dict(valueOrigin)
+            If ignoreSpaces Then valueDesc2 = Trim(valueDesc2)
+            If ignoreCase Then valueDesc2 = LCase(valueDesc2)
+            
+            If valueDesc1 = valueDesc2 Then
+                ws1.Cells(rowIndex, addedColumn).Value = "Unchanged"
+                CopySelectedColumns ws1, ws2, rowIndex, valueOrigin, selectedCols
+            Else
+                ws1.Cells(rowIndex, addedColumn).Value = "Changed"
+                reportText = reportText & valueOrigin & ",Changed," & valueDesc2 & "," & valueDesc1 & vbNewLine
+            End If
+        Else
+            ws1.Rows(rowIndex).Interior.Color = RGB(0, 255, 0)
+            ws1.Cells(rowIndex, addedColumn).Value = "New"
+            reportText = reportText & valueOrigin & ",New,," & valueDesc1 & vbNewLine
+        End If
+    Next cell
+    
+    ' Generate report if requested
+    If generateReport Then
+        Dim reportPath As String
+        reportPath = ThisWorkbook.Path & "\Comparison_Report.csv"
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        Open reportPath For Output As #fileNum
+        Print #fileNum, reportText
+        Close #fileNum
+        MsgBox "Report saved at: " & reportPath, vbInformation, "Report Generated"
+    End If
+    
+    MsgBox "Comparison and copying complete!", vbInformation
+End Sub
+
+' Subroutine to copy only selected columns
+Sub CopySelectedColumns(ws1 As Worksheet, ws2 As Worksheet, rowIndex As Long, originValue As String, selectedCols As Object)
+    Dim colName As String
+    Dim colIndex As Integer
+    Dim ws2Row As Range
+    
+    ' Find the row in Sheet2 matching the originValue
+    Set ws2Row = ws2.Range(ws2.Cells(2, 1), ws2.Cells(ws2.Rows.Count, 1)).Find(originValue, LookAt:=xlWhole)
+    If Not ws2Row Is Nothing Then
+        For Each colName In selectedCols.keys
+            colIndex = selectedCols(colName)
+            ws1.Cells(rowIndex, colIndex).Value = ws2Row.Cells(1, colIndex).Value
+        Next colName
+    End If
+End Sub
